@@ -1,7 +1,7 @@
 // Mr. Arkiletian ICTP 12
 // Simultaneous linear equation assignment (2 team members)
 // Solved using the STL generic vector container class 
-
+// I added something for fun
 
 #include <iostream>
 #include <vector>
