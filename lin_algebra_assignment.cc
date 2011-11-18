@@ -14,7 +14,7 @@ typedef vector <Dvector> Dmatrix;
 
 // Prototypes (variable names included, but not needed)
 // DO NOT change any prototypes!! NO other functions allowed.
-
+Dmatrix Minor(const Dmatrix &Amat, const int col);
 Dmatrix GetA(){
 	Dmatrix m(3);
 	for (int i=0;i<3;i++)
@@ -40,6 +40,7 @@ void Display(const Dvector &xvect){
 	for (Dvector::const_iterator i=xvect.begin();i!=xvect.end();i++){
 		cout << *i<<'\t';
 	}
+	cout << endl;
 }
 // displays the contents of vector xvect
 
@@ -54,30 +55,59 @@ void Display(const Dmatrix &Amat){
 
 // displays the contents of matrix Amat (Note: Display function is overloaded)
 
-Dvector Solvex(const Dmatrix &Amat, const Dvector &bvect);
-// Solves for systems of linear equations in the form Ax=b using cramer's rule 
-
-double Det(const Dmatrix &Amat);
+double Det(const Dmatrix &Amat){
+	if (Amat.size()==2) {
+		return Amat[1][1]*Amat[0][0]-Amat[0][1]*Amat[1][0];
+	}
+	else {
+		double r = 0;
+		int i = 1;
+		for (unsigned int j=0;j<Amat.size();j++){
+			r+=i*Amat[j][0]*Det(Minor(Amat,j));
+			i*=-1;
+		}
+		return r;
+	}
+}
 // returns the Determinant of matrix Amat using a recursive algorithm
 // base case is 2x2 matrix 
 
-Dmatrix Replace(Dmatrix Rmat, const int col, const Dvector &bvect);
+Dmatrix Replace(Dmatrix Rmat, const int col, const Dvector &bvect){
+	for (unsigned int i=0;i<bvect.size();i++){
+		Rmat[i][col]=bvect[i];
+	}
+	return Rmat;
+}
 // Replaces the column 'col' in Rmat with bvect and returns Rmat
 
 Dmatrix Minor(const Dmatrix &Amat, const int col){
 	int n = Amat.size();
-	Dmatrix m(n-1);
-	for (int i=0;i<col;i++){
+	Dmatrix m;
+	for (int j=0;j<n;j++){
+		if (j==col)continue;
 		Dvector v(n-1);
-		for (int j=1;j<n;j++)
-			v[j-1]=Amat[i][j];
-		m[i]=v;
+		for (int i=1;i<n;i++)
+			v[i-1]=Amat[i][j];
+		m.push_back(v);
 	}
+	
 	return m;
 }
 	
 // Gets the Minor matrix of Amat by crossing out the first row and 
 // column 'col' then returns that smaller matrix
+
+Dvector Solvex(const Dmatrix &Amat, const Dvector &bvect){
+	Dvector r;
+	double D = Det(Amat);
+	for (unsigned int i=0;i<bvect.size();i++){
+		Dmatrix Bmat = Replace(Amat,i,bvect);
+		Display(Bmat);
+		r.push_back(Det(Bmat)/D);
+	}
+	return r;
+}
+// Solves for systems of linear equations in the form Ax=b using cramer's rule 
 
 
 //-------------------------------------------
@@ -87,12 +117,13 @@ Dmatrix A;
 Dvector b,x;
 
 A=GetA();
-Display(A);
+//Display(A);
 b=Getb(A.size());
-Display(b);
-Display(Minor(A,1));
-//x=Solvex(A,b);
-//Display(x);
+//Display(b);
+cout<< Det(A);
+//Display(Minor(A,1));
+x=Solvex(A,b);
+Display(x);
 
 return(0);
 }
