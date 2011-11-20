@@ -63,7 +63,7 @@ double Det(const Dmatrix &Amat){
 		double r = 0;
 		int i = 1;
 		for (unsigned int j=0;j<Amat.size();j++){
-			r+=i*Amat[j][0]*Det(Minor(Amat,j));
+			r+=i*Amat[0][j]*Det(Minor(Amat,j));
 			i*=-1;
 		}
 		return r;
@@ -102,7 +102,6 @@ Dvector Solvex(const Dmatrix &Amat, const Dvector &bvect){
 	double D = Det(Amat);
 	for (unsigned int i=0;i<bvect.size();i++){
 		Dmatrix Bmat = Replace(Amat,i,bvect);
-		Display(Bmat);
 		r.push_back(Det(Bmat)/D);
 	}
 	return r;
@@ -117,11 +116,8 @@ Dmatrix A;
 Dvector b,x;
 
 A=GetA();
-//Display(A);
+Display(A);
 b=Getb(A.size());
-//Display(b);
-cout<< Det(A);
-//Display(Minor(A,1));
 x=Solvex(A,b);
 Display(x);
 
